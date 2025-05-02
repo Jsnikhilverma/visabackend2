@@ -45,6 +45,19 @@ exports.getAllPassports = async (req, res) => {
   }
 };
 
+exports.getPassportById = async (req, res) => {
+  const { passportId } = req.params;
+  try {
+    const passport = await Passport.findById(passportId);
+    if (!passport) {
+      return res.status(404).json({ message: "Passport not found" });
+    }
+    res.status(200).json({ data: passport });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 exports.updatePassportStatus = async (req, res) => {
   const { passportId } = req.params;
   const { status } = req.query;
