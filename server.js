@@ -15,6 +15,7 @@ const adminkycRoutes = require("./routes/adminkycRoutes");
 const alluser = require("./routes/alluserRoutes");
 const adminonlypassportRoutes = require("./routes/adminonlypassportRoutes");
 const adminallvisaRoutes = require("./routes/adminallvisaRoutes");
+const adminPassportRoutes = require("./routes/adminPassportRoutes");
 dotenv.config();
 
 const app = express();
@@ -46,19 +47,22 @@ app.get("/ping", (req, res) => {
   res.send("pong");
 });
 
-// Routes
+// user Routes
 app.use("/api/auth", auth);
 app.use("/api/kyc", kycRoutes);
 app.use("/api/passport", passportRoutes);
 app.use("/api/onlypassport", onlypassportRoutes);
 app.use("/api/profile", userProfileRoutes);
 app.use("/api/visa", visaRoutes);
+
+// Admin Routes
 app.use("/api/admin", adminSignupRoutes);
 app.use("/api/admin/role", roleRoutes);
 app.use("/api/admin/kyc", adminkycRoutes);
 app.use("/api/admin/allusers", alluser);
 app.use("/api/admin/passport", adminonlypassportRoutes);
 app.use("/api/admin/visa", adminallvisaRoutes);
+app.use("/api/admin/passportuser", adminPassportRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 3000;

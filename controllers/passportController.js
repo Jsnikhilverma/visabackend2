@@ -92,3 +92,29 @@ exports.updatePassportStatus = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// admin
+
+exports.getAllPassportsadmin = async (req, res) => {
+  try {
+    const passports = await Passport.find({});
+    res.status(200).json({ data: passports });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// get passport by id
+
+exports.getPassportByIdadmin = async (req, res) => {
+  const { passportId } = req.params;
+  try {
+    const passport = await Passport.findById(passportId);
+    if (!passport) {
+      return res.status(404).json({ message: "Passport not found" });
+    }
+    res.status(200).json({ data: passport });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
