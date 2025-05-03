@@ -13,7 +13,7 @@ exports.submitKyc = async (req, res) => {
       return res.status(400).json({ message: "All images are required" });
     }
     const newKyc = new Kyc({
-      userId: req.user.id, // You must be setting this from auth middleware
+      userId: req.userId, // You must be setting this from auth middleware
       firstName,
       lastName,
       address,
