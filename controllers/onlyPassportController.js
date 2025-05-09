@@ -1,24 +1,72 @@
 const OnlyPassport = require("../models/onlyPassport");
+const User = require("../models/User");
 
 exports.createOnlyPassport = async (req, res) => {
   try {
     const { kycId } = req.params;
     const passportFrontImg = req.files?.passportFrontImg?.[0]?.path;
-    const passportBackImg = req.files?.passportBackImg?.[0]?.path;
+    const userId = req.userId;
+    console.log(userId);
 
-    if (!kycId || !passportFrontImg || !passportBackImg) {
-      return res
-        .status(400)
-        .json({ message: "All fields including images are required" });
-    }
+    const {
+      Fullname,
+      PassportNumber,
+      IssuingCountry,
+      PlaceofIssue,
+      DateofIssue,
+      DateofExpiry,
+      DateofBirth,
+      Nationality,
+      Gender,
+      PassportType,
+    } = req.body;
+
+    // if (
+    //   !kycId ||
+    //   !Fullname ||
+    //   !passportFrontImg ||
+    //   !PassportNumber ||
+    //   !IssuingCountry ||
+    //   !PlaceofIssue ||
+    //   !DateofIssue ||
+    //   !DateofExpiry ||
+    //   !DateofBirth ||
+    //   Nationality ||
+    //   Gender ||
+    //   PassportType
+    // ) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "All fields including images are required" });
+    // }
 
     const newPassport = new OnlyPassport({
       kycId,
       passportFrontImg,
-      passportBackImg,
+      Fullname,
+      PassportNumber,
+      IssuingCountry,
+      PlaceofIssue,
+      DateofBirth,
+      DateofIssue,
+      DateofExpiry,
+      Nationality,
+      Gender,
+      PassportType,
     });
 
     const savedPassport = await newPassport.save();
+    const savedPass = savedPassport._id.toString();
+
+    const user = await User.findById(userId);
+    const onlyPassport = await OnlyPassport.findById(savedPass);
+
+    console.log(onlyPassport, "OnlyPassport");
+
+    user.onlyPassportId = savedPass;
+    await user.save();
+
+    // console.log(user, "user");
 
     res.status(201).json({
       message: "Passport application submitted successfully",

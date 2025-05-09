@@ -1,29 +1,34 @@
 const { default: mongoose } = require("mongoose");
 const Kyc = require("../models/Kyc");
+const User = require("../models/User");
 
 exports.submitKyc = async (req, res) => {
   try {
-    const { firstName, lastName, address, pincode } = req.body;
-
-    const adharFrontImg = req.files?.adharFrontImg?.[0]?.path;
-    const adharBackImg = req.files?.adharBackImg?.[0]?.path;
-    const panCardImg = req.files?.panCardImg?.[0]?.path;
-
-    if (!adharFrontImg || !adharBackImg || !panCardImg) {
-      return res.status(400).json({ message: "All images are required" });
-    }
+    const user_id = req.userId;
+    const { firstName, email, country, nationality, address, pincode } =
+      req.body;
     const newKyc = new Kyc({
       userId: req.userId, // You must be setting this from auth middleware
       firstName,
-      lastName,
+      email,
+      country,
+      nationality,
       address,
       pincode,
-      adharFrontImg,
-      adharBackImg,
-      panCardImg,
     });
 
     await newKyc.save();
+
+    console.log(newKyc._id.toString(), user_id);
+    const user = await User.findById(user_id);
+    console.log(user);
+    const kyc = await Kyc.findById(newKyc._id.toString());
+    console.log(kyc, "kyc");
+
+    user.kycId = newKyc._id.toString();
+    await user.save();
+    console.log(user, "user");
+
     res
       .status(201)
       .json({ message: "KYC submitted successfully", data: newKyc });
@@ -62,6 +67,8 @@ exports.getAllKyc = async (req, res) => {
       .status(200)
       .json({ message: "KYC details fetched successfully", data: kycs });
   } catch (error) {
+    console.log(eror);
+
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -76,6 +83,7 @@ exports.toggleKyc = async (req, res) => {
 
   try {
     const kyc = await Kyc.findById(kycId);
+    console.log(kyc, "kkk");
 
     kyc.status = status;
     await kyc.save();

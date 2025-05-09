@@ -1,9 +1,10 @@
 const Passport = require("../models/Passport");
-
+const User = require("../models/User");
 exports.applyPassport = async (req, res) => {
   try {
     const { firstName, lastName, dateOfBirth } = req.body;
     const { kycId } = req.params; // Extract kycId from params
+    const userId = req.userId;
 
     const userImg = req.files?.userImg?.[0]?.path;
     const adharFrontImg = req.files?.adharFrontImg?.[0]?.path;
@@ -26,6 +27,16 @@ exports.applyPassport = async (req, res) => {
     });
 
     await passport.save();
+    const savedPass = passport._id.toString();
+
+    const user = await User.findById(userId);
+    const onlyPassport = await Passport.findById(savedPass);
+
+    console.log(onlyPassport, "OnlyPassport");
+
+    user.applypassportId = savedPass;
+    await user.save();
+    console.log(user);
 
     res.status(201).json({
       message: "Passport application submitted successfully",

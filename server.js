@@ -22,7 +22,11 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173"], // or your frontend URL
+    origin: [
+      "http://localhost:4000",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ], // or your frontend URL
     credentials: true, // if you're using cookies
   })
 ); // Add this line

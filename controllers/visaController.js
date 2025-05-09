@@ -1,6 +1,8 @@
 const VisaApplication = require("../models/VisaApplication");
+const User = require("../models/User");
 
 exports.applyVisa = async (req, res) => {
+  const userId = req.userId;
   try {
     const {
       country,
@@ -31,6 +33,16 @@ exports.applyVisa = async (req, res) => {
     });
 
     const saved = await newVisa.save();
+    const savedPass = saved._id.toString();
+
+    const user = await User.findById(userId);
+    const onlyPassport = await VisaApplication.findById(savedPass);
+
+    console.log(onlyPassport, "OnlyPassport");
+
+    user.visaApplicationId = savedPass;
+    await user.save();
+    console.log(user);
     res.status(201).json(saved);
   } catch (err) {
     res.status(500).json({ message: err.message });

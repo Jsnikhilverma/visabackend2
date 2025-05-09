@@ -1,8 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { signup, login } = require("../controllers/authController");
+const {
+  sendOTP,
+  verifyOTP,
+  getUserById,
+} = require("../controllers/authController");
 
-router.post("/signup", signup);
-router.post("/login", login);
+router.post("/send-otp", sendOTP);
+router.post("/verify-otp", verifyOTP);
+router.get("/user/:id", getUserById);
 
 module.exports = router;

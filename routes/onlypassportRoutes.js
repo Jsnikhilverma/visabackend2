@@ -12,10 +12,8 @@ const {
 
 router.post(
   "/onlypassport/:kycId", // Assuming kycId is passed as a URL parameter
-  upload.fields([
-    { name: "passportFrontImg", maxCount: 1 },
-    { name: "passportBackImg", maxCount: 1 },
-  ]),
+  auth,
+  upload.fields([{ name: "passportFrontImg", maxCount: 1 }]),
   createOnlyPassport
 );
 
