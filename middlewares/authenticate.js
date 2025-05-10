@@ -8,6 +8,7 @@ exports.auth = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, "secret");
+
     req.userId = decoded.id; // You can now access req.user._id
     next();
   } catch (err) {

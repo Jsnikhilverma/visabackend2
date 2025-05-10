@@ -14,6 +14,6 @@ router.get("/visaapplications", authenticate, getVisaApplications);
 router.put("/visaapplications/:id", authenticate, updateVisaApplication);
 router.delete("/visaapplications/:id", authenticate, deleteVisaApplication);
 router.get("/allvisaapplications", authenticate, getAllVisaApplications);
-router.get("/visaapplications/:id", authenticate, getVisaApplicationById);
+router.get("/visaapplications/:visaId", authenticate, getVisaApplicationById);
 
 module.exports = router;

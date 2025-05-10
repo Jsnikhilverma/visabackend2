@@ -7,32 +7,39 @@ const sendSMSOTP = require("../utils/sendSMSOTP");
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
-// const JWT_SECRET = "secret";
 
-// exports.signup = async (req, res) => {
-//   const { name, email, password } = req.body;
-//   try {
-//     let user = await User.findOne({ email });
-//     if (user) return res.status(400).json({ msg: "User already exists" });
+exports.signup = async (req, res) => {
+  const { name, email, mobile, password } = req.body;
+  try {
+    let user = await User.findOne({ email });
+    if (user) return res.status(400).json({ msg: "User already exists" });
 
-//     const salt = await bcrypt.genSalt(10);
-//     const hashedPassword = await bcrypt.hash(password, salt);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-//     user = new User({
-//       name,
-//       email,
-//       password: hashedPassword,
-//     });
+    user = new User({
+      name,
+      email,
+      mobile,
+      password: hashedPassword,
+    });
 
-//     await user.save();
+    await user.save();
 
-//     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" });
-//     res.json({ user: { id: user._id, name: user.name, email: user.email } });
-//   } catch (err) {
-//     console.error(err.message);
-//     res.status(500).send("Server error");
-//   }
-// };
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" });
+    res.json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+      },
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+};
 
 // exports.login = async (req, res) => {
 //   const { email, password } = req.body;
@@ -168,7 +175,6 @@ exports.sendOTP = async (req, res) => {
     const otp = generateOTP();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Build the query object based on available fields
     const query = {};
     if (email) query.email = email;
     if (mobile) query.mobile = mobile;
@@ -176,12 +182,13 @@ exports.sendOTP = async (req, res) => {
     let user = await User.findOne(query);
 
     if (!user) {
-      user = await User.create({ email, mobile, otp, otpExpires });
-    } else {
-      user.otp = otp;
-      user.otpExpires = otpExpires;
-      await user.save();
+      return res.status(404).json({ message: "User not found" });
     }
+
+    // Update existing user with new OTP
+    user.otp = otp;
+    user.otpExpires = otpExpires;
+    await user.save();
 
     if (email) await sendEmailOTP(email, otp);
     if (mobile) await sendSMSOTP(mobile, otp);

@@ -8,6 +8,7 @@ const {
   getVisaApplications,
   getVisaApplicationById,
   updateVisaApplicationStatus,
+  getAllVisaApplications,
 } = require("../controllers/visaController");
 
 // POST /api/visa/apply
@@ -22,11 +23,12 @@ router.post(
   applyVisa
 );
 router.get("/allapplications/:userId", auth, getVisaApplications);
-router.get("/visa/:visaid", auth, getVisaApplicationById);
+router.get("/visa/:visaId", auth, getVisaApplicationById);
 router.put(
   "/visaApplicationId/:visaApplicationId",
   auth,
   updateVisaApplicationStatus
 );
+router.get("/allapplications", auth, getAllVisaApplications);
 
 module.exports = router;

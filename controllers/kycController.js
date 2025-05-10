@@ -39,7 +39,7 @@ exports.submitKyc = async (req, res) => {
 
 exports.getKyc = async (req, res) => {
   try {
-    const userId = req.user.id; // Assuming userId is set from auth middleware
+    const userId = req.userid; // Assuming userId is set from auth middleware
 
     const kycDetails = await Kyc.findOne({ userId });
 
@@ -83,7 +83,7 @@ exports.toggleKyc = async (req, res) => {
 
   try {
     const kyc = await Kyc.findById(kycId);
-    console.log(kyc, "kkk");
+    // console.log(kyc, "kkk");
 
     kyc.status = status;
     await kyc.save();

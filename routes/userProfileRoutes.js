@@ -9,7 +9,7 @@ const {
 } = require("../controllers/userProfileController");
 
 // Protected Routes
-router.post("/add", auth, createOrUpdateProfile);
+router.put("/add", auth, createOrUpdateProfile);
 router.get("/all", auth, getProfile);
 router.delete("/delete", auth, deleteProfile);
 router.get("/:userId", auth, getProfileByUserId);

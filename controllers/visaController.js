@@ -60,7 +60,7 @@ exports.getVisaApplications = async (req, res) => {
 };
 exports.getVisaApplicationById = async (req, res) => {
   try {
-    const id = req.params.id; // Correctly get the ID from route params
+    const id = req.params.visaId; // Correctly get the ID from route params
     console.log("Visa Application ID:", id); // Log the visa ID to verify
 
     const visaApplication = await VisaApplication.findOne({ _id: id }); // Use extracted ID
