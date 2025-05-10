@@ -22,7 +22,11 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "*", // or your frontend URL
+    origin: [
+      "https://visabackend2-production.up.railway.app",
+      // "http://localhost:5173",
+      // "http://localhost:3000",
+    ], // or your frontend URL
     credentials: true, // if you're using cookies
   })
 ); // Add this line
