@@ -27,6 +27,7 @@ app.use(
       "https://visa2-c6vn.vercel.app",
       "http://localhost:5173",
       "http://localhost:3000",
+      "https://visaadmin-opal.vercel.app",
     ], // or your frontend URL
     credentials: true, // if you're using cookies
   })
