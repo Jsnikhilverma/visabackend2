@@ -26,6 +26,7 @@ app.use(
       "https://visabackend2-production.up.railway.app",
       "https://visa2-c6vn.vercel.app",
       "http://localhost:5173",
+      "http://localhost:5174",
       "http://localhost:3000",
       "https://visaadmin-opal.vercel.app",
     ], // or your frontend URL
