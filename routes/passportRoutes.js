@@ -6,7 +6,7 @@ const path = require("path");
 const {
   applyPassport,
   getAllPassports, // Add this function in your controller
-  updatePassportStatus,
+  // updatePassportStatus,
   // getPassportById, // Add this function in your controller
 } = require("../controllers/passportController");
 // your auth middleware
@@ -35,7 +35,7 @@ router.post(
 
 // GET API to fetch all passport applications
 router.get("/passports", auth, getAllPassports);
-router.put("/passport-status-update/:passportId", auth, updatePassportStatus);
+// router.put("/passport-status-update/:passportId", auth, updatePassportStatus);
 
 // GET API to fetch a specific passport application by ID
 // router.get("/:id", authenticate, getPassportById);

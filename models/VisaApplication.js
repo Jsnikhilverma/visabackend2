@@ -13,6 +13,12 @@ const visaSchema = new mongoose.Schema(
       required: true,
     },
 
+    expertId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Expert",
+      required: true,
+    },
+
     country: { type: String, required: true },
     visaType: { type: String, required: true },
     travelDate: { type: Date, required: true },

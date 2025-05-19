@@ -72,22 +72,38 @@ exports.getPassportById = async (req, res) => {
 exports.updatePassportStatus = async (req, res) => {
   const { passportId } = req.params;
   const { status } = req.query;
+  const { reason } = req.body;
 
+  // Basic validation
   if (!passportId || !status) {
     return res
       .status(400)
       .json({ message: "Passport ID and status are required" });
   }
+
+  // Validate status value
   if (!["pending", "approved", "rejected"].includes(status)) {
     return res.status(400).json({
       message: "Status must be either pending, approved, or rejected",
     });
   }
 
+  // Require reason in all cases
+  if (!reason || reason.trim() === "") {
+    return res.status(400).json({
+      message: "Reason is required for status update",
+    });
+  }
+
   try {
+    const updateData = {
+      status,
+      reason,
+    };
+
     const updatedPassport = await Passport.findByIdAndUpdate(
       passportId,
-      { status },
+      updateData,
       { new: true }
     );
 
@@ -125,6 +141,57 @@ exports.getPassportByIdadmin = async (req, res) => {
       return res.status(404).json({ message: "Passport not found" });
     }
     res.status(200).json({ data: passport });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.assignExpertToPassport = async (req, res) => {
+  const { passportId, expertId } = req.params;
+
+  if (!passportId || !expertId) {
+    return res
+      .status(400)
+      .json({ message: "KYC ID and Expert ID are required" });
+  }
+
+  try {
+    const passport = await Passport.findById(passportId);
+
+    if (!passport) {
+      return res.status(404).json({ message: "passport not found" });
+    }
+
+    passport.expertId = expertId; // Assuming this field exists in the model
+    await passport.save();
+
+    res.status(200).json({
+      message: "Expert assigned to passport successfully",
+      data: passport,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Get all KYCs assigned to a specific expert
+exports.getPassportByExpertId = async (req, res) => {
+  const { expertId } = req.params;
+
+  if (!expertId) {
+    return res.status(400).json({ message: "Expert ID is required" });
+  }
+
+  try {
+    const passport = await Passport.find({ expertId });
+
+    if (!passport || passport.length === 0) {
+      return res.status(404).json({ message: "No KYC found for this expert" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "passport fetched successfully", data: passport });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }

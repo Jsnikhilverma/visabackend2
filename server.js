@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 
+// Import CSV import function
+
+// Routes
 const auth = require("./routes/auth");
 const kycRoutes = require("./routes/kycRoutes");
 const passportRoutes = require("./routes/passportRoutes");
@@ -16,6 +19,9 @@ const alluser = require("./routes/alluserRoutes");
 const adminonlypassportRoutes = require("./routes/adminonlypassportRoutes");
 const adminallvisaRoutes = require("./routes/adminallvisaRoutes");
 const adminPassportRoutes = require("./routes/adminPassportRoutes");
+const expertRoutes = require("./routes/expertRoutes");
+const importCSVFiles = require("./importAllCsv");
+
 dotenv.config();
 
 const app = express();
@@ -29,10 +35,12 @@ app.use(
       "http://localhost:5174",
       "http://localhost:3000",
       "https://visaadmin-opal.vercel.app",
-    ], // or your frontend URL
-    credentials: true, // if you're using cookies
+    ],
+    credentials: true,
   })
-); // Add this line
+);
+
+// Static files
 app.use("/uploads", express.static("uploads"));
 
 // MongoDB Connection
@@ -41,20 +49,28 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("✅ MongoDB Connected"))
+  .then(async () => {
+    console.log("✅ MongoDB Connected");
+
+    // Optional: Import CSV if environment variable is set
+    if (process.env.IMPORT_CSV === "true") {
+      console.log("📥 Starting CSV import...");
+      await importCSVFiles();
+    }
+  })
   .catch((err) => {
     console.error("❌ Failed to connect to MongoDB");
     console.error("👉 MONGO_URI:", process.env.MONGO_URI);
     console.error("📛 Error message:", err.message);
-    process.exit(1); // Optional: Exit the app if DB fails
+    process.exit(1);
   });
 
-// Ping-Pong Route
+// Ping Route
 app.get("/ping", (req, res) => {
   res.send("pong");
 });
 
-// user Routes
+// User Routes
 app.use("/api/auth", auth);
 app.use("/api/kyc", kycRoutes);
 app.use("/api/passport", passportRoutes);
@@ -71,6 +87,9 @@ app.use("/api/admin/passport", adminonlypassportRoutes);
 app.use("/api/admin/visa", adminallvisaRoutes);
 app.use("/api/admin/passportuser", adminPassportRoutes);
 
+// Expert Routes
+app.use("/api/expert", expertRoutes);
+
 // Start Server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

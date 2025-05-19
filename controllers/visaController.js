@@ -144,3 +144,54 @@ exports.updateVisaApplicationStatus = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+exports.assignExpertToVisa = async (req, res) => {
+  const { visaId, expertId } = req.params;
+
+  if (!visaId || !expertId) {
+    return res
+      .status(400)
+      .json({ message: "Visa ID and Expert ID are required" });
+  }
+
+  try {
+    const Visa = await VisaApplication.findById(visaId);
+
+    if (!Visa) {
+      return res.status(404).json({ message: "Visa not found" });
+    }
+
+    Visa.expertId = expertId; // Assuming this field exists in the model
+    await Visa.save();
+
+    res.status(200).json({
+      message: "Expert assigned to Visa successfully",
+      data: Visa,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Get all KYCs assigned to a specific expert
+exports.getVisaByExpertId = async (req, res) => {
+  const { expertId } = req.params;
+
+  if (!expertId) {
+    return res.status(400).json({ message: "Expert ID is required" });
+  }
+
+  try {
+    const visa = await VisaApplication.find({ expertId });
+
+    if (!visa || visa.length === 0) {
+      return res.status(404).json({ message: "No Visa found for this expert" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Visa Application fetched successfully", data: visa });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

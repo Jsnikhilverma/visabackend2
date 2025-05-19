@@ -24,11 +24,11 @@ router.post(
 );
 router.get("/allapplications/:userId", auth, getVisaApplications);
 router.get("/visa/:visaId", auth, getVisaApplicationById);
-router.put(
-  "/visaApplicationId/:visaApplicationId",
-  auth,
-  updateVisaApplicationStatus
-);
+// router.put(
+//   "/visaApplicationId/:visaApplicationId",
+//   auth,
+//   updateVisaApplicationStatus
+// );
 router.get("/allapplications", auth, getAllVisaApplications);
 
 module.exports = router;
