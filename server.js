@@ -16,6 +16,7 @@ const alluser = require("./routes/alluserRoutes");
 const adminonlypassportRoutes = require("./routes/adminonlypassportRoutes");
 const adminallvisaRoutes = require("./routes/adminallvisaRoutes");
 const adminPassportRoutes = require("./routes/adminPassportRoutes");
+const morgan = require("morgan");
 dotenv.config();
 
 const app = express();
@@ -33,13 +34,14 @@ app.use(
     credentials: true, // if you're using cookies
   })
 ); // Add this line
+
 app.use("/uploads", express.static("uploads"));
 
 // MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    // useNewUrlParser: true,
+    // useUnifiedTopology: true,
   })
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => {
@@ -48,7 +50,8 @@ mongoose
     console.error("📛 Error message:", err.message);
     process.exit(1); // Optional: Exit the app if DB fails
   });
-
+app.use(morgan("dev"));
+app.use(express.urlencoded({ limit: "128kb", extended: true }));
 // Ping-Pong Route
 app.get("/ping", (req, res) => {
   res.send("pong");

@@ -1,3 +1,5 @@
+const bcrypt =require("bcryptjs");
+const Admin = require("../models/Admin");
 exports.signup = async (req, res) => {
   const { email, password, role = "viewer" } = req.body;
   try {
@@ -13,6 +15,8 @@ exports.signup = async (req, res) => {
 
     res.status(201).json({ message: "User registered", userId: newAdmin._id });
   } catch (err) {
+    console.log(err);
+    
     res.status(500).json({ error: "Server error" });
   }
 };
