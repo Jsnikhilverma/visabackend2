@@ -1,5 +1,6 @@
 const VisaApplication = require("../models/VisaApplication");
 const User = require("../models/User");
+const Expert = require("../models/Expert");
 
 exports.applyVisa = async (req, res) => {
   const userId = req.userId;
@@ -193,5 +194,60 @@ exports.getVisaByExpertId = async (req, res) => {
       .json({ message: "Visa Application fetched successfully", data: visa });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.filterVisaApplication = async (req, res) => {
+  try {
+    const {
+      status,
+      startDate,
+      endDate,
+      country,
+      expertName,
+      clientName,
+      clientEmail,
+    } = req.query;
+
+    const filter = {};
+
+    // Direct filters
+    if (status) filter.status = status;
+    if (country) filter.country = country;
+
+    // CreatedAt date range filter
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) filter.createdAt.$gte = new Date(startDate);
+      if (endDate) filter.createdAt.$lte = new Date(endDate);
+    }
+
+    // Query with conditional populate match
+    const applications = await VisaApplication.find(filter)
+      .populate({
+        path: "userId",
+        match: {
+          ...(clientName && { name: { $regex: clientName, $options: "i" } }),
+          ...(clientEmail && { email: { $regex: clientEmail, $options: "i" } }),
+        },
+        select: "name email",
+      })
+      .populate({
+        path: "expertId",
+        match: expertName
+          ? { name: { $regex: expertName, $options: "i" } }
+          : {},
+        select: "name",
+      });
+
+    // Filter out results where populate match failed
+    const filteredApplications = applications.filter(
+      (app) => app.userId && app.expertId
+    );
+
+    res.status(200).json({ data: filteredApplications });
+  } catch (err) {
+    console.error("Error filtering visa applications:", err);
+    res.status(500).json({ message: "Failed to filter visa applications" });
   }
 };

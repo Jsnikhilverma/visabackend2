@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const visaSchema = new mongoose.Schema(
   {
-    // userId: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "User",
-    //   required: true,
-    // },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     passportId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "UserProfile",
