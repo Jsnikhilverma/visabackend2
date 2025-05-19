@@ -5,6 +5,10 @@ const userSchema = new mongoose.Schema(
     name: { type: String },
     email: { type: String, unique: true, sparse: true },
     mobile: { type: String, unique: true, sparse: true },
+    password: { type: String, select: false },
+    referredBy: [
+      { type: mongoose.Types.ObjectId, ref: "User", required: false },
+    ],
     otp: String,
     otpExpires: Date,
     isVerified: { type: Boolean, default: false },

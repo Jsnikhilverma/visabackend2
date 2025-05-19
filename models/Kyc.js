@@ -24,8 +24,20 @@ const kycSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    documents: {
+      adharFrontImg: String,
+      adharBackImg: String,
+      panCardImg: String,
+    },
+    isApproved:{
+      type:Boolean,
+      index:true,
+      default:function(){
+        return this.status==="approved";
+      }
+    }
   },
-  { timestamps: true }
+  { timestamps: true,versionKey:false }
 );
 
 module.exports = mongoose.model("Kyc", kycSchema);
