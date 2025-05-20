@@ -2,6 +2,7 @@ const { default: mongoose } = require("mongoose");
 const Kyc = require("../models/Kyc");
 const User = require("../models/User");
 const uploadService = require("../utils/cloudinary");
+const { sendEmail } = require("../utils/mail");
 exports.submitKyc = async (req, res) => {
   try {
     const user_id = req.userId;
@@ -59,6 +60,12 @@ exports.submitKyc = async (req, res) => {
     await user.save();
     // console.log(user, "user");
 
+    await sendEmail(
+      user.email,
+      "KYC Submitted",
+      `Your KYC has been submitted successfully. Your KYC ID is ${newKyc._id.toString()}`
+    );
+
     res
       .status(201)
       .json({ message: "KYC submitted successfully", data: newKyc });
@@ -112,6 +119,19 @@ exports.toggleKyc = async (req, res) => {
   const { kycId } = req.params;
   const { status } = req.query;
   const { reason } = req.body; // ✅ Extract reason from body
+  // const useridd = req.userId; // Assuming userId is set from auth middleware
+  // console.log(useridd, "id");
+  const kyc = await Kyc.findById(kycId);
+  console.log(kyc, "kyc");
+
+  const useridd = kyc.userId;
+  console.log(useridd, "id");
+
+  const uu = await User.findById(useridd);
+  console.log(uu, "uss");
+
+  const email = uu.email;
+  console.log(email, "email");
 
   if (!kycId) {
     return res.status(400).json({ message: "KYC ID is required" });
@@ -129,6 +149,12 @@ exports.toggleKyc = async (req, res) => {
     }
 
     await kyc.save();
+
+    await sendEmail(
+      email,
+      "Status update successfully",
+      `Your KYC Status has been Upadated successfully. Your status is ${kyc.status.toString()}`
+    );
 
     res.status(200).json({ message: `Status updated successfully`, data: kyc });
   } catch (error) {

@@ -10,7 +10,6 @@ const kycSchema = new mongoose.Schema(
     expertId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Expert",
-      required: true,
     },
     firstName: { type: String, required: true },
     email: { type: String, required: true },
@@ -19,6 +18,7 @@ const kycSchema = new mongoose.Schema(
     address: { type: String, required: true },
     pincode: { type: String, required: false },
     reason: { type: String },
+    adminreason: { type: String },
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
@@ -29,15 +29,15 @@ const kycSchema = new mongoose.Schema(
       adharBackImg: String,
       panCardImg: String,
     },
-    isApproved:{
-      type:Boolean,
-      index:true,
-      default:function(){
-        return this.status==="approved";
-      }
-    }
+    isApproved: {
+      type: Boolean,
+      index: true,
+      default: function () {
+        return this.status === "approved";
+      },
+    },
   },
-  { timestamps: true,versionKey:false }
+  { timestamps: true, versionKey: false }
 );
 
 module.exports = mongoose.model("Kyc", kycSchema);

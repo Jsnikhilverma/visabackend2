@@ -12,6 +12,7 @@ const onlypassportSchema = new mongoose.Schema({
   Gender: { type: String, required: true },
   PassportType: { type: String, required: true },
   passportFrontImg: { type: String, required: true },
+  adminreason: { type: String },
   status: {
     type: String,
     enum: ["pending", "approved", "rejected"],

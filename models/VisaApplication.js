@@ -27,6 +27,8 @@ const visaSchema = new mongoose.Schema(
     accommodation: { type: String },
     hasInvitation: { type: Boolean, default: false },
     isApproved: { type: Boolean, default: false },
+    reason: { type: String },
+    adminreason: { type: String },
 
     documents: {
       photo: { type: String },

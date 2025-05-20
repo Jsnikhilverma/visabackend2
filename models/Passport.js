@@ -15,6 +15,7 @@ const passportSchema = new mongoose.Schema({
   adharBackImg: String,
   panCardImg: String,
   reason: { type: String },
+  adminreason: { type: String },
   status: {
     type: String,
     enum: ["pending", "approved", "rejected"],
