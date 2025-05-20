@@ -4,6 +4,8 @@ const Expert = require("../models/Expert");
 
 exports.applyVisa = async (req, res) => {
   const userId = req.userId;
+  console.log(userId, "UserId");
+
   try {
     const {
       country,
@@ -17,7 +19,7 @@ exports.applyVisa = async (req, res) => {
     } = req.body;
 
     const newVisa = new VisaApplication({
-      //   userId: req.user.id,
+      userId: userId,
       passportId: req.params.passportId,
       country,
       visaType,
@@ -46,6 +48,8 @@ exports.applyVisa = async (req, res) => {
     console.log(user);
     res.status(201).json(saved);
   } catch (err) {
+    console.log(err, "d");
+
     res.status(500).json({ message: err.message });
   }
 };
@@ -141,7 +145,7 @@ exports.updateVisaApplicationStatus = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: `Status updated successfully`, data: visa });
+      .json({ message: "Status updated successfully", data: visa });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -310,39 +314,44 @@ exports.filterVisaApplication = async (req, res) => {
 
     const filter = {};
 
-    // Direct filters
     if (status) filter.status = status;
     if (country) filter.country = country;
 
-    // CreatedAt date range filter
     if (startDate || endDate) {
       filter.createdAt = {};
       if (startDate) filter.createdAt.$gte = new Date(startDate);
       if (endDate) filter.createdAt.$lte = new Date(endDate);
     }
 
-    // Query with conditional populate match
+    const userMatch = {};
+    if (clientName) userMatch.name = { $regex: clientName, $options: "i" };
+    if (clientEmail) userMatch.email = { $regex: clientEmail, $options: "i" };
+
+    const expertMatch = {};
+    if (expertName) expertMatch.name = { $regex: expertName, $options: "i" };
+
     const applications = await VisaApplication.find(filter)
       .populate({
         path: "userId",
-        match: {
-          ...(clientName && { name: { $regex: clientName, $options: "i" } }),
-          ...(clientEmail && { email: { $regex: clientEmail, $options: "i" } }),
-        },
+        match: Object.keys(userMatch).length > 0 ? userMatch : undefined,
         select: "name email",
       })
       .populate({
         path: "expertId",
-        match: expertName
-          ? { name: { $regex: expertName, $options: "i" } }
-          : {},
+        match: Object.keys(expertMatch).length > 0 ? expertMatch : undefined,
         select: "name",
       });
 
-    // Filter out results where populate match failed
-    const filteredApplications = applications.filter(
-      (app) => app.userId && app.expertId
-    );
+    // Dynamically filter only if match was applied
+    let filteredApplications = applications;
+
+    if (Object.keys(userMatch).length > 0) {
+      filteredApplications = filteredApplications.filter((app) => app.userId);
+    }
+
+    if (Object.keys(expertMatch).length > 0) {
+      filteredApplications = filteredApplications.filter((app) => app.expertId);
+    }
 
     res.status(200).json({ data: filteredApplications });
   } catch (err) {
@@ -358,7 +367,9 @@ exports.updateVisaPriority = async (req, res) => {
 
     // Validate required field
     if (typeof priority !== "boolean") {
-      return res.status(400).json({ message: "Priority field must be a boolean." });
+      return res
+        .status(400)
+        .json({ message: "Priority field must be a boolean." });
     }
 
     const updateFields = { priority };
@@ -378,7 +389,9 @@ exports.updateVisaPriority = async (req, res) => {
       return res.status(404).json({ message: "Visa application not found." });
     }
 
-    res.status(200).json({ message: "Priority updated successfully.", data: updatedVisa });
+    res
+      .status(200)
+      .json({ message: "Priority updated successfully.", data: updatedVisa });
   } catch (error) {
     console.error("Error updating priority:", error);
     res.status(500).json({ message: "Server error." });
@@ -387,14 +400,8 @@ exports.updateVisaPriority = async (req, res) => {
 
 exports.userFilterVisaApplication = async (req, res) => {
   try {
-    const {
-      status,
-      country,
-      priority,
-      startDate,
-      endDate,
-      clientName,
-    } = req.query;
+    const { status, country, priority, startDate, endDate, clientName } =
+      req.query;
 
     const query = {};
 
@@ -432,8 +439,8 @@ exports.userFilterVisaApplication = async (req, res) => {
 
     const applications = await VisaApplication.find(query)
       .populate("userId", "name email") // include user info
-      .populate("expertId", "name")     // optional: include expert info
-      .sort({ createdAt: -1 });         // newest first
+      .populate("expertId", "name") // optional: include expert info
+      .sort({ createdAt: -1 }); // newest first
 
     res.status(200).json({ count: applications.length, data: applications });
   } catch (error) {
