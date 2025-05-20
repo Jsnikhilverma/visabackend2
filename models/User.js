@@ -16,6 +16,11 @@ const userSchema = new mongoose.Schema(
     onlyPassportId: String,
     applypassportId: String,
     visaApplicationId: String,
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
 
     // Embedded UserProfile fields
     profile: {

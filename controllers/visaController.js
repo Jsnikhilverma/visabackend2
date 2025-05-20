@@ -350,3 +350,94 @@ exports.filterVisaApplication = async (req, res) => {
     res.status(500).json({ message: "Failed to filter visa applications" });
   }
 };
+
+exports.updateVisaPriority = async (req, res) => {
+  try {
+    const id = req.params.visaId; // Visa application ID from the route
+    const { priority, priorityReason } = req.body;
+
+    // Validate required field
+    if (typeof priority !== "boolean") {
+      return res.status(400).json({ message: "Priority field must be a boolean." });
+    }
+
+    const updateFields = { priority };
+
+    // Only add priorityReason if it was sent
+    if (priorityReason !== undefined) {
+      updateFields.priorityReason = priorityReason;
+    }
+
+    const updatedVisa = await VisaApplication.findByIdAndUpdate(
+      id,
+      { $set: updateFields },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedVisa) {
+      return res.status(404).json({ message: "Visa application not found." });
+    }
+
+    res.status(200).json({ message: "Priority updated successfully.", data: updatedVisa });
+  } catch (error) {
+    console.error("Error updating priority:", error);
+    res.status(500).json({ message: "Server error." });
+  }
+};
+
+exports.userFilterVisaApplication = async (req, res) => {
+  try {
+    const {
+      status,
+      country,
+      priority,
+      startDate,
+      endDate,
+      clientName,
+    } = req.query;
+
+    const query = {};
+
+    if (status) {
+      query.status = status;
+    }
+
+    if (country) {
+      query.country = { $regex: new RegExp(country, "i") }; // case-insensitive
+    }
+
+    if (priority !== undefined) {
+      query.priority = priority === "true";
+    }
+
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) {
+        query.createdAt.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        query.createdAt.$lte = new Date(endDate);
+      }
+    }
+
+    // If filtering by client name, find matching user IDs first
+    if (clientName) {
+      const matchedUsers = await User.find({
+        name: { $regex: new RegExp(clientName, "i") },
+      }).select("_id");
+
+      const userIds = matchedUsers.map((u) => u._id);
+      query.userId = { $in: userIds };
+    }
+
+    const applications = await VisaApplication.find(query)
+      .populate("userId", "name email") // include user info
+      .populate("expertId", "name")     // optional: include expert info
+      .sort({ createdAt: -1 });         // newest first
+
+    res.status(200).json({ count: applications.length, data: applications });
+  } catch (error) {
+    console.error("Error filtering visa applications:", error);
+    res.status(500).json({ message: "Server error." });
+  }
+};
