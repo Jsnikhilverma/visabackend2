@@ -8,7 +8,8 @@ const {
   createPlatform,
   deletePlatform,
   updatePlatform,
-  CreateDocument,
+  getAllPlatforms,
+  getPlatformById,
   GetAllDocument,
 } = require("../controllers/platformController");
 
@@ -20,6 +21,9 @@ router.post(
 );
 
 router.delete("/deletePlatform/:id", authenticate, deletePlatform);
+
+router.get("/getAllPlatforms", authenticate, getAllPlatforms);
+router.get("/getPlatformById/:id", authenticate, getPlatformById);
 
 router.put(
   "/updatePlatform/:id",
