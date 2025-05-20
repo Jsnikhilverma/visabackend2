@@ -123,6 +123,7 @@ exports.getAllVisaApplications = async (req, res) => {
 exports.updateVisaApplicationStatus = async (req, res) => {
   const { visaApplicationId } = req.params;
   const status = req.query.status;
+  const reason = req.body; // ✅ Extract reason from body
 
   if (!visaApplicationId) {
     return res.status(400).json({ message: "Visa application ID is required" });
@@ -192,6 +193,104 @@ exports.getVisaByExpertId = async (req, res) => {
     res
       .status(200)
       .json({ message: "Visa Application fetched successfully", data: visa });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.updateVisaStatus = async (req, res) => {
+  const { visaId } = req.params;
+  const { status } = req.query;
+  const { reason } = req.body;
+
+  // Basic validation
+  if (!visaId || !status) {
+    return res.status(400).json({ message: "Visa ID and status are required" });
+  }
+
+  // Validate status value
+  if (!["pending", "approved", "rejected"].includes(status)) {
+    return res.status(400).json({
+      message: "Status must be either pending, approved, or rejected",
+    });
+  }
+
+  // Require reason in all cases
+  if (!reason || reason.trim() === "") {
+    return res.status(400).json({
+      message: "Reason is required for status update",
+    });
+  }
+
+  try {
+    const updateData = {
+      status,
+      reason,
+    };
+
+    const updatedVisa = await VisaApplication.findByIdAndUpdate(
+      visaId,
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedVisa) {
+      return res.status(404).json({ message: "Visa not found" });
+    }
+
+    res.status(200).json({
+      message: `Visa status updated to ${status}`,
+      data: updatedVisa,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.updateVisaStatus = async (req, res) => {
+  const { visaId } = req.params;
+  const { status } = req.query;
+  const { reason } = req.body;
+
+  // Basic validation
+  if (!visaId || !status) {
+    return res.status(400).json({ message: "Visa ID and status are required" });
+  }
+
+  // Validate status value
+  if (!["pending", "approved", "rejected"].includes(status)) {
+    return res.status(400).json({
+      message: "Status must be either pending, approved, or rejected",
+    });
+  }
+
+  // Require reason in all cases
+  if (!reason || reason.trim() === "") {
+    return res.status(400).json({
+      message: "Reason is required for status update",
+    });
+  }
+
+  try {
+    const updateData = {
+      status,
+      reason,
+    };
+
+    const updatedVisa = await VisaApplication.findByIdAndUpdate(
+      visaId,
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedVisa) {
+      return res.status(404).json({ message: "Visa not found" });
+    }
+
+    res.status(200).json({
+      message: `Visa status updated to ${status}`,
+      data: updatedVisa,
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }

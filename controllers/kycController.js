@@ -72,7 +72,7 @@ exports.submitKyc = async (req, res) => {
 exports.getKyc = async (req, res) => {
   try {
     const userId = req.userid; // Assuming userId is set from auth middleware
-    
+
     const kycDetails = await Kyc.findOne({ userId }).populate(
       "userId",
       "name mobile"
@@ -147,7 +147,7 @@ exports.getKycById = async (req, res) => {
     const kycDetails = await Kyc.findById(kycId).populate(
       "userId",
       "name mobile email "
-    );;
+    );
 
     if (!kycDetails) {
       return res.status(404).json({ message: "KYC details not found" });
