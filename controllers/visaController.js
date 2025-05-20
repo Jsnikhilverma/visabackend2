@@ -1,5 +1,6 @@
 const VisaApplication = require("../models/VisaApplication");
 const User = require("../models/User");
+const Expert = require("../models/Expert");
 
 exports.applyVisa = async (req, res) => {
   const userId = req.userId;
@@ -243,5 +244,109 @@ exports.updateVisaStatus = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.updateVisaStatus = async (req, res) => {
+  const { visaId } = req.params;
+  const { status } = req.query;
+  const { reason } = req.body;
+
+  // Basic validation
+  if (!visaId || !status) {
+    return res.status(400).json({ message: "Visa ID and status are required" });
+  }
+
+  // Validate status value
+  if (!["pending", "approved", "rejected"].includes(status)) {
+    return res.status(400).json({
+      message: "Status must be either pending, approved, or rejected",
+    });
+  }
+
+  // Require reason in all cases
+  if (!reason || reason.trim() === "") {
+    return res.status(400).json({
+      message: "Reason is required for status update",
+    });
+  }
+
+  try {
+    const updateData = {
+      status,
+      reason,
+    };
+
+    const updatedVisa = await VisaApplication.findByIdAndUpdate(
+      visaId,
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedVisa) {
+      return res.status(404).json({ message: "Visa not found" });
+    }
+
+    res.status(200).json({
+      message: `Visa status updated to ${status}`,
+      data: updatedVisa,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.filterVisaApplication = async (req, res) => {
+  try {
+    const {
+      status,
+      startDate,
+      endDate,
+      country,
+      expertName,
+      clientName,
+      clientEmail,
+    } = req.query;
+
+    const filter = {};
+
+    // Direct filters
+    if (status) filter.status = status;
+    if (country) filter.country = country;
+
+    // CreatedAt date range filter
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) filter.createdAt.$gte = new Date(startDate);
+      if (endDate) filter.createdAt.$lte = new Date(endDate);
+    }
+
+    // Query with conditional populate match
+    const applications = await VisaApplication.find(filter)
+      .populate({
+        path: "userId",
+        match: {
+          ...(clientName && { name: { $regex: clientName, $options: "i" } }),
+          ...(clientEmail && { email: { $regex: clientEmail, $options: "i" } }),
+        },
+        select: "name email",
+      })
+      .populate({
+        path: "expertId",
+        match: expertName
+          ? { name: { $regex: expertName, $options: "i" } }
+          : {},
+        select: "name",
+      });
+
+    // Filter out results where populate match failed
+    const filteredApplications = applications.filter(
+      (app) => app.userId && app.expertId
+    );
+
+    res.status(200).json({ data: filteredApplications });
+  } catch (err) {
+    console.error("Error filtering visa applications:", err);
+    res.status(500).json({ message: "Failed to filter visa applications" });
   }
 };
