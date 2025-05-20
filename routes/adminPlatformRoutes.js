@@ -10,6 +10,7 @@ const {
   updatePlatform,
   getAllPlatforms,
   getPlatformById,
+  CreateDocument,
   GetAllDocument,
 } = require("../controllers/platformController");
 
