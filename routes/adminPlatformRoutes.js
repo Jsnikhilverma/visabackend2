@@ -21,11 +21,17 @@ router.get("/getAllPlatforms", authenticate, getAllPlatforms);
 router.get("/getPlatformById/:id", authenticate, getPlatformById);
 
 router.put(
-    "/updatePlatform/:id",
-    authenticate,
-    upload.single("platformLogo"),
-    updatePlatform
+  "/updatePlatform/:id",
+  authenticate,
+  upload.single("platformLogo"),
+  updatePlatform
 );
 
+router.post(
+  "/createDocument",
+  authenticate,
+  upload.single("image"),
+  CreateDocument
+);
 
 module.exports = router;
