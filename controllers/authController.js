@@ -253,3 +253,30 @@ exports.verifyOTP = async (req, res) => {
     res.status(500).json({ message: "Server error during OTP verification." });
   }
 };
+
+exports.updateUserStatus = async (req, res) => {
+  try {
+    const id  = req.params.userId; // User ID from URL
+    const { status } = req.body;
+
+    // Validate input
+    if (!["active", "inactive"].includes(status)) {
+      return res.status(400).json({ message: "Status must be 'active' or 'inactive'." });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({ message: "User status updated successfully.", user: updatedUser });
+  } catch (error) {
+    console.error("Error updating user status:", error);
+    res.status(500).json({ message: "Server error." });
+  }
+};

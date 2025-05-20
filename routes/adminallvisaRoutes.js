@@ -9,7 +9,8 @@ const {
   updateVisaApplication,
   getVisaApplicationById,
   assignExpertToVisa,
-  filterVisaApplication
+  filterVisaApplication,
+  updateVisaPriority
 } = require("../controllers/visaController");
 
 router.get("/visaapplications", authenticate, getVisaApplications);
@@ -19,5 +20,6 @@ router.get("/allvisaapplications", authenticate, getAllVisaApplications);
 router.get("/visaapplications/:visaId", authenticate, getVisaApplicationById);
 router.put("/assign-visa/:visaId/:expertId", authenticate, assignExpertToVisa);
 router.get("/filterApplications", authenticate, filterVisaApplication);
+router.patch("/updateVisaPriority/:visaId", authenticate, updateVisaPriority);
 
 module.exports = router;

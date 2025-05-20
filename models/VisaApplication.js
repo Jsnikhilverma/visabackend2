@@ -38,6 +38,13 @@ const visaSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    priority: {
+      type: Boolean,
+      default: false
+    },
+    priorityReason: {
+      type: String
+    }
   },
   { timestamps: true }
 );

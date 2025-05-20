@@ -20,6 +20,7 @@ const adminonlypassportRoutes = require("./routes/adminonlypassportRoutes");
 const adminallvisaRoutes = require("./routes/adminallvisaRoutes");
 const adminPassportRoutes = require("./routes/adminPassportRoutes");
 const expertRoutes = require("./routes/expertRoutes");
+const userVisaRoutes = require("./routes/userVisaRoutes");
 const importCSVFiles = require("./importAllCsv");
 
 dotenv.config();
@@ -77,6 +78,7 @@ app.use("/api/passport", passportRoutes);
 app.use("/api/onlypassport", onlypassportRoutes);
 app.use("/api/profile", userProfileRoutes);
 app.use("/api/visa", visaRoutes);
+app.use("/api/user", userVisaRoutes);
 
 // Admin Routes
 app.use("/api/admin", adminSignupRoutes);
@@ -86,6 +88,7 @@ app.use("/api/admin/allusers", alluser);
 app.use("/api/admin/passport", adminonlypassportRoutes);
 app.use("/api/admin/visa", adminallvisaRoutes);
 app.use("/api/admin/passportuser", adminPassportRoutes);
+app.use("/api/admin/user", adminPassportRoutes);
 
 // Expert Routes
 app.use("/api/expert", expertRoutes);
