@@ -89,3 +89,29 @@ exports.updatePlatform = async (req, res) => {
       res.status(500).json({ message: "Server error" });
     }
 };
+
+exports.getAllPlatforms = async (req, res) => {
+  try {
+    const platforms = await Platform.find().sort({ createdAt: -1 }); // newest first
+    res.status(200).json({ message: "Platforms fetched successfully", data: platforms });
+  } catch (error) {
+    console.error("Error fetching platforms:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getPlatformById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const platform = await Platform.findById(id);
+    if (!platform) {
+      return res.status(404).json({ message: "Platform not found" });
+    }
+
+    res.status(200).json({ message: "Platform fetched successfully", data: platform });
+  } catch (error) {
+    console.error("Error fetching platform by ID:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

@@ -5,7 +5,7 @@ const { authenticate } = require("../middlewares/adminauth");
 const upload = multer({ dest: "uploads/platform" }); // Or your custom multer config
 
 const {
-  createPlatform, deletePlatform, updatePlatform
+  createPlatform, deletePlatform, updatePlatform, getAllPlatforms, getPlatformById
 } = require("../controllers/platformController");
 
 router.post(
@@ -16,6 +16,9 @@ router.post(
 );
 
 router.delete("/deletePlatform/:id", authenticate, deletePlatform);
+
+router.get("/getAllPlatforms", authenticate, getAllPlatforms);
+router.get("/getPlatformById/:id", authenticate, getPlatformById);
 
 router.put(
     "/updatePlatform/:id",
