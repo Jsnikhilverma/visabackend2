@@ -1,0 +1,25 @@
+const mongoose = require("mongoose");
+
+const platformSchema = new mongoose.Schema(
+  {
+    brandName: {
+      type: String,
+      required: true,
+    },
+    logo: {
+      type: String,
+      required: true,
+    },
+    contactInfo: {
+      type: String,
+      required: true,
+    },
+    tax: {
+      type: String,
+      required: true
+    }
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model("Platform", platformSchema); 
