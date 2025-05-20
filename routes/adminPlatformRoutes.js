@@ -9,6 +9,7 @@ const {
   deletePlatform,
   updatePlatform,
   CreateDocument,
+  GetAllDocument,
 } = require("../controllers/platformController");
 
 router.post(
@@ -33,5 +34,7 @@ router.post(
   upload.single("image"),
   CreateDocument
 );
+
+router.get("/getAllDocument", authenticate, GetAllDocument);
 
 module.exports = router;
