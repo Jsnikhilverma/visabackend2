@@ -82,6 +82,7 @@ app.use("/api/profile", userProfileRoutes);
 app.use("/api/visa", visaRoutes);
 app.use("/api/user", userVisaRoutes);
 app.use("/api/payment", paymentRoutes);
+
 // Admin Routes
 app.use("/api/admin", adminSignupRoutes);
 app.use("/api/admin/role", roleRoutes);
