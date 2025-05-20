@@ -25,11 +25,14 @@ const {
   getVisaByExpertId,
   getVisaApplicationById,
   updateVisaApplicationStatus,
+  updateVisaStatus,
 } = require("../controllers/visaController");
+
+const coverLetterController = require("../controllers/coverLetterController");
 
 // Multer config
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/expert/"),
+  destination: (req, file, cb) => cb(null, "./public/temp"),
   filename: (req, file, cb) =>
     cb(null, Date.now() + path.extname(file.originalname)),
 });
@@ -69,6 +72,22 @@ router.put(
   "/visaApplicationId/:visaApplicationId",
   expertMiddleware,
   updateVisaApplicationStatus
+);
+router.put("/visa-status/:visaId", updateVisaStatus);
+
+// coverletter
+router.put(
+  "/coverletter",
+  upload.single("file"),
+  expertMiddleware,
+  coverLetterController.createCoverLetter
+);
+
+// GET all cover letters
+router.get(
+  "/allcoverletter",
+  expertMiddleware,
+  coverLetterController.getAllCoverLetters
 );
 
 // Protected test route
