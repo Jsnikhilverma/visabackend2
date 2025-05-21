@@ -1,6 +1,7 @@
 const VisaApplication = require("../models/VisaApplication");
 const User = require("../models/User");
 const Expert = require("../models/Expert");
+const { sendEmail } = require("../utils/mail");
 
 exports.applyVisa = async (req, res) => {
   const userId = req.userId;
@@ -17,7 +18,7 @@ exports.applyVisa = async (req, res) => {
     } = req.body;
 
     const newVisa = new VisaApplication({
-      //   userId: req.user.id,
+      userId: userId,
       passportId: req.params.passportId,
       country,
       visaType,
@@ -43,6 +44,12 @@ exports.applyVisa = async (req, res) => {
 
     user.visaApplicationId = savedPass;
     await user.save();
+
+    await sendEmail(
+      user.email,
+      "Visa Application Submitted",
+      `Your Visa application has been submitted successfully. Your Visa ID is ${saved._id.toString()}`
+    );
     console.log(user);
     res.status(201).json(saved);
   } catch (err) {
@@ -79,6 +86,9 @@ exports.updateVisaApplication = async (req, res) => {
   try {
     const id = req.params.visaid; // Correctly get the ID from route params
     console.log("Visa Application ID:", id); // Log the visa ID to verify
+    const useridd = VisaApplication.userId;
+    const uu = await User.findById(useridd);
+    const email = uu.email;
 
     const updatedVisa = await VisaApplication.findByIdAndUpdate(
       id,
@@ -89,6 +99,12 @@ exports.updateVisaApplication = async (req, res) => {
     if (!updatedVisa) {
       return res.status(404).json({ message: "Visa application not found" });
     }
+
+    await sendEmail(
+      email,
+      "Status update successfully",
+      `Your KYC Status has been Upadated successfully. Your status is ${kyc.status.toString()}`
+    );
 
     res.status(200).json(updatedVisa);
   } catch (err) {

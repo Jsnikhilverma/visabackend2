@@ -1,5 +1,6 @@
 const Passport = require("../models/Passport");
 const User = require("../models/User");
+const { sendEmail } = require("../utils/mail");
 exports.applyPassport = async (req, res) => {
   try {
     const { firstName, lastName, dateOfBirth } = req.body;
@@ -37,6 +38,11 @@ exports.applyPassport = async (req, res) => {
     user.applypassportId = savedPass;
     await user.save();
     console.log(user);
+    await sendEmail(
+      user.email,
+      "Passport Submitted",
+      `Your Passport has been submitted successfully. Your Passport ID is ${passport._id.toString()}`
+    );
 
     res.status(201).json({
       message: "Passport application submitted successfully",
@@ -74,6 +80,10 @@ exports.updatePassportStatus = async (req, res) => {
   const { status } = req.query;
   const { reason } = req.body;
 
+  const useridd = Passport.userId;
+  const uu = await User.findById(useridd);
+  const email = uu.email;
+
   // Basic validation
   if (!passportId || !status) {
     return res
@@ -110,6 +120,12 @@ exports.updatePassportStatus = async (req, res) => {
     if (!updatedPassport) {
       return res.status(404).json({ message: "Passport not found" });
     }
+
+    await sendEmail(
+      email,
+      "Status update successfully",
+      `Your Passport Status has been Upadated successfully. Your status is ${updatedPassport.status.toString()}`
+    );
 
     res.status(200).json({
       message: `Passport status updated to ${status}`,

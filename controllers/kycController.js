@@ -122,16 +122,10 @@ exports.toggleKyc = async (req, res) => {
   // const useridd = req.userId; // Assuming userId is set from auth middleware
   // console.log(useridd, "id");
   const kyc = await Kyc.findById(kycId);
-  console.log(kyc, "kyc");
 
   const useridd = kyc.userId;
-  console.log(useridd, "id");
-
   const uu = await User.findById(useridd);
-  console.log(uu, "uss");
-
   const email = uu.email;
-  console.log(email, "email");
 
   if (!kycId) {
     return res.status(400).json({ message: "KYC ID is required" });
