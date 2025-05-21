@@ -10,7 +10,15 @@ const platformSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    contactInfo: {
+    email : {
+      type: String,
+      required: true,
+    },
+    mobile : {
+      type: String,
+      required: true,
+    },
+    address : {
       type: String,
       required: true,
     },

@@ -147,6 +147,24 @@ exports.createSponsorshipLetter = async (req, res) => {
   }
 };
 
+exports.getAllNoc = async (req, res) => {
+  try {
+    const noc = await Noc.find().sort({ createdAt: -1 });
+    res.status(200).json(noc);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch", details: err.message });
+  }
+};
+
+exports.getAllSponsorshipLetters = async (req, res) => {
+  try {
+    const sponsorshipLetters = await SponsorshipLetter.find().sort({ createdAt: -1 });
+    res.status(200).json(sponsorshipLetters);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch", details: err.message });
+  }
+}; 
+
 exports.getAllCoverLetters = async (req, res) => {
   try {
     const coverLetters = await CoverLetter.find().sort({ createdAt: -1 });
@@ -155,3 +173,4 @@ exports.getAllCoverLetters = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch", details: err.message });
   }
 };
+
