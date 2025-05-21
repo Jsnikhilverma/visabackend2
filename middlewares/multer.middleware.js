@@ -1,29 +1,25 @@
+// middlewares/dynamicUpload.js
 const multer = require("multer");
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//       cb(null, "./public/temp")
-//     },
-//     filename: function (req, file, cb) {
-//       cb(null, file.originalname)
-//     }
-// })
-  
+const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
 
+function dynamicUpload(folderName = "") { 
+  return multer({
+    storage: multer.diskStorage({
+      destination: (req, file, cb) => {
+        const baseDir = path.join(process.cwd(), "uploads", folderName);
+        if (!fs.existsSync(baseDir)) {
+          fs.mkdirSync(baseDir, { recursive: true });
+        }
+        cb(null, baseDir);
+      },
+      filename: (req, file, cb) => {
+        const uniqueSuffix = crypto.randomBytes(8).toString("hex");
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+      },
+    }),
+  });
+}
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-      cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-      const ext = path.extname(file.originalname); 
-      const fileName = randomImageName() + ext;
-      const fullPath = path.join(uploadDir, fileName);
-      cb(null, fileName);
-  }
-});
-
-const upload = multer({ 
-  storage:storage 
-})
-module.exports = upload;
-
+module.exports = dynamicUpload;
