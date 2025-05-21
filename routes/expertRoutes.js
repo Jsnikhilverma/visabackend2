@@ -82,6 +82,22 @@ router.put(
   coverLetterController.createCoverLetter
 );
 
+//create noc
+router.put(
+  "/noc",
+  dynamicUpload("noc").single("file"),
+  expertMiddleware,
+  coverLetterController.createNoc
+);
+
+//create sponsorshipLetter
+router.put(
+  "/sponsorshipLetter",
+  dynamicUpload("sponsorshipLetter").single("file"),
+  expertMiddleware,
+  coverLetterController.createSponsorshipLetter
+);
+ 
 // GET all cover letters
 router.get(
   "/allcoverletter",
