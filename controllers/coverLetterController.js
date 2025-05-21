@@ -61,7 +61,15 @@ exports.createNoc = async (req, res) => {
         .json({ message: "File uploaded to Cloudinary", data: newNoc });
     } else {
       // Form mode
-      const { name, address, purpose, issueDate, authority, designation, remarks } = req.body;
+      const {
+        name,
+        address,
+        purpose,
+        issueDate,
+        authority,
+        designation,
+        remarks,
+      } = req.body;
 
       const newNoc = new Noc({
         name,
@@ -70,13 +78,11 @@ exports.createNoc = async (req, res) => {
         issueDate,
         authority,
         designation,
-        remarks
+        remarks,
       });
 
       await newNoc.save();
-      return res
-        .status(201)
-        .json({ message: "Cover letter saved", data: newNoc });
+      return res.status(201).json({ message: "NOC saved", data: newNoc });
     }
   } catch (err) {
     console.error(err);
@@ -97,12 +103,24 @@ exports.createSponsorshipLetter = async (req, res) => {
       });
 
       await newSponsorshipLetter.save();
-      return res
-        .status(201)
-        .json({ message: "File uploaded to Cloudinary", data: newSponsorshipLetter });
+      return res.status(201).json({
+        message: "File uploaded to Cloudinary",
+        data: newSponsorshipLetter,
+      });
     } else {
       // Form mode
-      const { name, address, phone, email, relationship, applicantName, visaPurpose, sponsorshipDetails, issueDate, notes } = req.body;
+      const {
+        name,
+        address,
+        phone,
+        email,
+        relationship,
+        applicantName,
+        visaPurpose,
+        sponsorshipDetails,
+        issueDate,
+        notes,
+      } = req.body;
 
       const newSponsorshipLetter = new SponsorshipLetter({
         name,
@@ -114,13 +132,14 @@ exports.createSponsorshipLetter = async (req, res) => {
         visaPurpose,
         sponsorshipDetails,
         issueDate,
-        notes
+        notes,
       });
 
       await newSponsorshipLetter.save();
-      return res
-        .status(201)
-        .json({ message: "Cover letter saved", data: newSponsorshipLetter });
+      return res.status(201).json({
+        message: "Sponsorship Letter saved",
+        data: newSponsorshipLetter,
+      });
     }
   } catch (err) {
     console.error(err);
