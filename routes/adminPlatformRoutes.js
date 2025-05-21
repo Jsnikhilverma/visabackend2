@@ -6,7 +6,6 @@ const dynamicUpload = require('../middlewares/multer.middleware'); // Or your cu
   
 const {
   createPlatform,
-  deletePlatform,
   updatePlatform,
   getAllPlatforms,
   getPlatformById,
