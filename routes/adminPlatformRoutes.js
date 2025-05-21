@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 const { authenticate } = require("../middlewares/adminauth");
 const dynamicUpload = require('../middlewares/multer.middleware'); // Or your custom multer config
- 
+  
 const {
   createPlatform,
   deletePlatform,
@@ -21,7 +21,7 @@ router.post(
   createPlatform
 );
 
-router.delete("/deletePlatform/:id", authenticate, deletePlatform);
+// router.delete("/deletePlatform/:id", authenticate, deletePlatform);
 
 router.get("/getAllPlatforms", authenticate, getAllPlatforms);
 router.get("/getPlatformById/:id", authenticate, getPlatformById);
