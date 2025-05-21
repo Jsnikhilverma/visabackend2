@@ -5,6 +5,8 @@ const { sendEmail } = require("../utils/mail");
 
 exports.applyVisa = async (req, res) => {
   const userId = req.userId;
+  console.log(userId, "UserId");
+
   try {
     const {
       country,
@@ -53,6 +55,8 @@ exports.applyVisa = async (req, res) => {
     console.log(user);
     res.status(201).json(saved);
   } catch (err) {
+    console.log(err, "d");
+
     res.status(500).json({ message: err.message });
   }
 };
@@ -157,7 +161,7 @@ exports.updateVisaApplicationStatus = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: `Status updated successfully`, data: visa });
+      .json({ message: "Status updated successfully", data: visa });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -326,39 +330,44 @@ exports.filterVisaApplication = async (req, res) => {
 
     const filter = {};
 
-    // Direct filters
     if (status) filter.status = status;
     if (country) filter.country = country;
 
-    // CreatedAt date range filter
     if (startDate || endDate) {
       filter.createdAt = {};
       if (startDate) filter.createdAt.$gte = new Date(startDate);
       if (endDate) filter.createdAt.$lte = new Date(endDate);
     }
 
-    // Query with conditional populate match
+    const userMatch = {};
+    if (clientName) userMatch.name = { $regex: clientName, $options: "i" };
+    if (clientEmail) userMatch.email = { $regex: clientEmail, $options: "i" };
+
+    const expertMatch = {};
+    if (expertName) expertMatch.name = { $regex: expertName, $options: "i" };
+
     const applications = await VisaApplication.find(filter)
       .populate({
         path: "userId",
-        match: {
-          ...(clientName && { name: { $regex: clientName, $options: "i" } }),
-          ...(clientEmail && { email: { $regex: clientEmail, $options: "i" } }),
-        },
+        match: Object.keys(userMatch).length > 0 ? userMatch : undefined,
         select: "name email",
       })
       .populate({
         path: "expertId",
-        match: expertName
-          ? { name: { $regex: expertName, $options: "i" } }
-          : {},
+        match: Object.keys(expertMatch).length > 0 ? expertMatch : undefined,
         select: "name",
       });
 
-    // Filter out results where populate match failed
-    const filteredApplications = applications.filter(
-      (app) => app.userId && app.expertId
-    );
+    // Dynamically filter only if match was applied
+    let filteredApplications = applications;
+
+    if (Object.keys(userMatch).length > 0) {
+      filteredApplications = filteredApplications.filter((app) => app.userId);
+    }
+
+    if (Object.keys(expertMatch).length > 0) {
+      filteredApplications = filteredApplications.filter((app) => app.expertId);
+    }
 
     res.status(200).json({ data: filteredApplications });
   } catch (err) {

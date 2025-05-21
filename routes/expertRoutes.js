@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
-const path = require("path");
+const dynamicUpload = require("../middlewares/multer.middleware");
 const {
   expertSignup,
   expertLogin,
@@ -31,18 +30,18 @@ const {
 const coverLetterController = require("../controllers/coverLetterController");
 
 // Multer config
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "./public/temp"),
-  filename: (req, file, cb) =>
-    cb(null, Date.now() + path.extname(file.originalname)),
-});
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => cb(null, "./public/temp"),
+//   filename: (req, file, cb) =>
+//     cb(null, Date.now() + path.extname(file.originalname)),
+// }); 
 
-const upload = multer({ storage });
+// const upload = multer({ storage });
 
 // Public routes
 router.post(
   "/signup",
-  upload.fields([
+  dynamicUpload("expertDetails").fields([
     { name: "profilePhoto", maxCount: 1 },
     { name: "governmentId", maxCount: 1 },
     { name: "idWithSelfie", maxCount: 1 },
@@ -78,7 +77,7 @@ router.put("/visa-status/:visaId", updateVisaStatus);
 // coverletter
 router.put(
   "/coverletter",
-  upload.single("file"),
+  dynamicUpload("coverletter").single("file"),
   expertMiddleware,
   coverLetterController.createCoverLetter
 );

@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
-const path = require("path");
-const upload = require("../middlewares/multer.middleware.js");
+const dynamicUpload = require("../middlewares/multer.middleware");
 const {
   submitKyc,
   getKycById,
@@ -12,18 +10,18 @@ const {
 const { auth } = require("../middlewares/authenticate"); // assumed middleware
 
 // Multer setup
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "./public/temp"),
-  filename: (req, file, cb) =>
-    cb(null, Date.now() + path.extname(file.originalname)),
-});
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => cb(null, "./public/temp"),
+//   filename: (req, file, cb) =>
+//     cb(null, Date.now() + path.extname(file.originalname)),
+// });
 
 // const upload = multer({ storage });
 
 router.post(
   "/submit",
   auth, 
-  upload.fields([
+  dynamicUpload("kycDetails").fields([
     { name: "adharFrontImg", maxCount: 1 },
     { name: "adharBackImg", maxCount: 1 },
     { name: "panCardImg", maxCount: 1 },

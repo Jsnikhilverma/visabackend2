@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const { auth } = require("../middlewares/authenticate");
-const upload = multer({ dest: "uploads/visa/" });
+// const upload = multer({ dest: "uploads/visa/" });
+const dynamicUpload = require("../middlewares/multer.middleware"); // Or your custom multer config
+
 const {
   applyVisa,
   getVisaApplications,
@@ -15,7 +17,7 @@ const {
 router.post(
   "/apply/:passportId", // Assuming passportId is passed as a URL parameter
   auth,
-  upload.fields([
+  dynamicUpload("visaDocs").fields([
     { name: "photo", maxCount: 1 },
     { name: "bankStatement", maxCount: 1 },
     { name: "invitation", maxCount: 1 },
