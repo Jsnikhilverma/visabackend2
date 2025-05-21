@@ -105,6 +105,20 @@ router.get(
   coverLetterController.getAllCoverLetters
 );
 
+// GET all noc
+router.get(
+  "/allNoc",
+  expertMiddleware,
+  coverLetterController.getAllNoc
+);
+
+// GET all sponsorship letters
+router.get(
+  "/allSponsorshipLetter",
+  expertMiddleware,
+  coverLetterController.getAllSponsorshipLetters
+);
+
 // Protected test route
 router.get("/dashboard", expertMiddleware, (req, res) => {
   res
