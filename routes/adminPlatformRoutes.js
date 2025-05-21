@@ -36,7 +36,7 @@ router.put(
 router.post(
   "/createDocument",
   authenticate,
-  upload.single("image"),
+  dynamicUpload("platform").single("image"),
   CreateDocument
 );
 
