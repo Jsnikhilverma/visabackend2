@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
 const { authenticate } = require("../middlewares/adminauth");
-const dynamicUpload = require('../middlewares/multer.middleware'); // Or your custom multer config
-  
+const dynamicUpload = require("../middlewares/multer.middleware"); // Or your custom multer config
+
 const {
   createPlatform,
   updatePlatform,

@@ -7,7 +7,7 @@ const {
   toggleKyc,
   getAllKyc,
 } = require("../controllers/kycController");
-const { auth } = require("../middlewares/authenticate"); // assumed middleware
+const { auth } = require("../middlewares/authenticate");
 
 // Multer setup
 // const storage = multer.diskStorage({
@@ -20,7 +20,7 @@ const { auth } = require("../middlewares/authenticate"); // assumed middleware
 
 router.post(
   "/submit",
-  auth, 
+  auth,
   dynamicUpload("kycDetails").fields([
     { name: "adharFrontImg", maxCount: 1 },
     { name: "adharBackImg", maxCount: 1 },

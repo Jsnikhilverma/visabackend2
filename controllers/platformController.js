@@ -1,6 +1,6 @@
 const Platform = require("../models/Platform");
 const Document = require("../models/Document");
-const fs = require("fs"); 
+const fs = require("fs");
 
 exports.createPlatform = async (req, res) => {
   try {
@@ -11,8 +11,8 @@ exports.createPlatform = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "Logo image is required." });
     }
-
-    const logoPath = req.file.path; // or req.file.filename if you're storing only the name
+    const logoPath = req.file ? `/uploads/${req.file.filename}` : null;
+    // const logoPath = req.file.path;
 
     if (!brandName || !email || !mobile || !address || !tax) {
       return res.status(400).json({ message: "All fields are required." });
@@ -64,6 +64,7 @@ exports.createPlatform = async (req, res) => {
 exports.updatePlatform = async (req, res) => {
   try {
     const { id } = req.params;
+
     const { brandName, email, mobile, address, tax } = req.body;
 
     const platform = await Platform.findById(id);
@@ -79,13 +80,14 @@ exports.updatePlatform = async (req, res) => {
     if (tax) platform.tax = tax;
 
     // Handle logo replacement if uploaded
-    const logoFile = req.files?.platformLogo?.[0];
+    // const logoFile = req.files?.platformLogo?.[0];
+    const logoFile = req.file ? `/uploads/${req.file.filename}` : null;
     if (logoFile) {
       // Optionally delete the old logo file if needed
       if (platform.logo && fs.existsSync(platform.logo)) {
         fs.unlinkSync(platform.logo); // use with care in production
       }
-      platform.logo = logoFile.path;
+      platform.logo = logoFile;
     }
 
     await platform.save();
@@ -161,7 +163,6 @@ exports.GetAllDocument = async (req, res) => {
   }
 };
 
-
 exports.getPlatformById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -191,4 +192,3 @@ exports.getAllPlatforms = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
