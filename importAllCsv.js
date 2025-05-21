@@ -28,7 +28,7 @@ async function importCSVFiles() {
     for (const [fileName, collectionName] of Object.entries(
       fileCollectionMap
     )) {
-      const filePath = `/mnt/data/${fileName}`;
+      const filePath = `./csv/${fileName}`;
       const results = [];
 
       if (!fs.existsSync(filePath)) {
