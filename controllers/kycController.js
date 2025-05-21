@@ -164,10 +164,7 @@ exports.getKycById = async (req, res) => {
   }
 
   try {
-    const kycDetails = await Kyc.findById(kycId).populate(
-      "userId",
-      "name mobile email "
-    );
+    const kycDetails = await Kyc.findById(kycId);
 
     if (!kycDetails) {
       return res.status(404).json({ message: "KYC details not found" });
