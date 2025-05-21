@@ -16,7 +16,6 @@ const visaSchema = new mongoose.Schema(
     expertId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Expert",
-      required: true,
     },
 
     country: { type: String, required: true },
@@ -42,11 +41,11 @@ const visaSchema = new mongoose.Schema(
     },
     priority: {
       type: Boolean,
-      default: false
+      default: false,
     },
     priorityReason: {
-      type: String
-    }
+      type: String,
+    },
   },
   { timestamps: true }
 );
